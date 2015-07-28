@@ -1,0 +1,92 @@
+{
+  parserClass="com.apophenic.csharpplugin.parser.CSharpParser"
+  parserUtilClass="com.apophenic.csharpplugin.parser.CSharpParserUtil"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="CSharp"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.apophenic.csharpplugin.psi"
+  psiImplPackage="com.apophenic.csharpplugin.psi.impl"
+
+  elementTypeHolderClass="com.apophenic.csharpplugin.psi.CSharpTypes"
+  elementTypeClass="com.apophenic.csharpplugin.CSharpElementType"
+  tokenTypeClass="com.apophenic.csharpplugin.CSharpTokenType"
+
+  psiImplUtilClass="com.apophenic.csharpplugin.psi.impl.CSharpPropertyImpl"
+  generateTokenAccessors=true
+
+  tokens=[
+      SEMI      = ';'
+      EQ        = '='
+      LPARAN    = '('
+      RPARAN    = ')'
+
+      SPACE     = 'regexp:\s+'
+      COMMENT   = 'regexp://.*'
+      NUMBER    = 'regexp:\d+(\.\d*)?'
+      STRING    = "regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
+      IDENTIFIER= 'regexp:\p{Alpha}\w*'
+      TEXT      = 'regexp:[a-zA-Z0-9]?'
+      KEYWORD   = 'regexp:(var|int|string)'
+
+      ADD       = '+'
+      SUBTRACT  = '-'
+      MULT      = '*'
+      DIVIDE    = '/'
+      NOT       = '!'
+    ]
+}
+
+File ::= ImportList NamespaceDec
+ImportList ::= ImportDec*
+ImportDec ::= using IDENTIFIER (IDENTIFIER | '.')* ';' {pin=1}
+NamespaceDec ::= namespace IDENTIFIER '{' ClassList '}'
+ClassList ::= ClassDec*
+ClassDec ::= AccessModifier? class IDENTIFIER '{' MethodList '}'
+MethodList ::= MethodDec*
+MethodDec ::= AccessModifier? Access_Types* Return_type IDENTIFIER '('(Types IDENTIFIER)*')' '{' MethodInstance '}'
+MethodInstance ::= IDENTIFIER ','*
+
+private AccessModifier ::= (public | private | protected)
+private Access_Types ::= (abstract | final | static | sealed | partial| extern | intern)+
+private Return_type ::= (void | Types | CustomObject)
+private CustomObject ::= IDENTIFIER('[]')?
+private Types ::= (int | string | byte | object| enum | bool)('[]')?
+
+//StringDec ::= KEYWORD TEXT '=' STRING ';'
+
+/* WS ::= SPACE
+
+COMMENT ::= '#'
+
+CRLF ::= BIT_AND
+
+LINE_COMMENT ::= '//'
+
+property ::= (KEY? SEPARATOR VALUE?) | KEY
+
+BAD_CHARACTER ::=
+
+FLOAT ::=
+
+MULTILINE_COMMENT ::=
+
+NLS ::=
+
+OCT ::=
+
+STRING ::=
+
+FLOATI ::=
+
+CHAR ::=
+
+INT ::=
+
+ IDENTIFIER ::=
+
+HEX ::=
+
+DECIMALI ::= */
+
