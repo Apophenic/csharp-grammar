@@ -21,14 +21,14 @@
       EQ        = '='
       LPARAN    = '('
       RPARAN    = ')'
+      LBRACK    = '{'
+      RBRACK    = '}'
 
-      SPACE     = 'regexp:\s+'
+      WS        = 'regexp:\s+'
       COMMENT   = 'regexp://.*'
-      NUMBER    = 'regexp:\d+(\.\d*)?'
+      DIGIT     = 'regexp:\d+(\.\d*)?'
       STRING    = "regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
       IDENTIFIER= 'regexp:\p{Alpha}\w*'
-      TEXT      = 'regexp:[a-zA-Z0-9]?'
-      KEYWORD   = 'regexp:(var|int|string)'
 
       ADD       = '+'
       SUBTRACT  = '-'
@@ -40,53 +40,23 @@
 
 File ::= ImportList NamespaceDec
 ImportList ::= ImportDec*
-ImportDec ::= using IDENTIFIER (IDENTIFIER | '.')* ';' {pin=1}
+ImportDec ::= using IDENTIFIER (IDENTIFIER | '.')* ';'
 NamespaceDec ::= namespace IDENTIFIER '{' ClassList '}'
 ClassList ::= ClassDec*
 ClassDec ::= AccessModifier? class IDENTIFIER '{' MethodList '}'
+
 MethodList ::= MethodDec*
-MethodDec ::= AccessModifier? Access_Types* Return_type IDENTIFIER '('(Types IDENTIFIER)*')' '{' MethodInstance '}'
-MethodInstance ::= IDENTIFIER ','*
+MethodDec ::= AccessModifier? Access_Types* Return_type IDENTIFIER '('(Types IDENTIFIER)*')' LBRACK Expr* RBRACK {pin=8}
+
+Expr ::= (VarDec)
+
+VarDec ::= (Types | CustomObject) IDENTIFIER '=' (new (Types | CustomObject) | (DIGIT | STRING)) ';'
+
 
 private AccessModifier ::= (public | private | protected)
-private Access_Types ::= (abstract | final | static | sealed | partial| extern | intern)+
+private Access_Types ::= (abstract | final | static | sealed | partial | extern | intern)
 private Return_type ::= (void | Types | CustomObject)
 private CustomObject ::= IDENTIFIER('[]')?
 private Types ::= (int | string | byte | object| enum | bool)('[]')?
 
-//StringDec ::= KEYWORD TEXT '=' STRING ';'
-
-/* WS ::= SPACE
-
-COMMENT ::= '#'
-
-CRLF ::= BIT_AND
-
-LINE_COMMENT ::= '//'
-
-property ::= (KEY? SEPARATOR VALUE?) | KEY
-
-BAD_CHARACTER ::=
-
-FLOAT ::=
-
-MULTILINE_COMMENT ::=
-
-NLS ::=
-
-OCT ::=
-
-STRING ::=
-
-FLOATI ::=
-
-CHAR ::=
-
-INT ::=
-
- IDENTIFIER ::=
-
-HEX ::=
-
-DECIMALI ::= */
 
