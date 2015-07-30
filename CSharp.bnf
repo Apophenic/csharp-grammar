@@ -66,31 +66,42 @@
       COMMENT              = 'regexp://.*'
       DIGIT                = 'regexp:\d+(\.\d*)?'
       STRING               = "regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
-      IDENTIFIER           = 'regexp:\p{Alpha}\w*'
+      ID                   = 'regexp:\p{Alpha}\w*'
     ]
 }
 
 File ::= ImportList NamespaceDec
 ImportList ::= ImportDec*
-ImportDec ::= using IDENTIFIER (IDENTIFIER | DOT)* SEMI
-NamespaceDec ::= namespace IDENTIFIER LBRACE ClassList RBRACE
+ImportDec ::= using ID (ID | DOT)* SEMI
+NamespaceDec ::= namespace ID LBRACE ClassList RBRACE
 ClassList ::= ClassDec*
-ClassDec ::= AccessModifier? class IDENTIFIER LBRACE MethodList RBRACE
+ClassDec ::= AccessModifier? ReferenceTypes ID LBRACE MethodList RBRACE
 
 MethodList ::= MethodDec*
-MethodDec ::= AccessModifier? Access_Types* Return_type IDENTIFIER LPAREN(Types IDENTIFIER)* RPAREN LBRACE Expr* RBRACE
+MethodDec ::= AccessModifier? TypeModifier* Return_type ID LPAREN(Types ID)* RPAREN LBRACE Expr* RBRACE
 {pin=8}
 
 Expr ::= (VarDec)
 
-VarDec ::= (Types | CustomObject) IDENTIFIER ASSIGN (new (Types | CustomObject) | (DIGIT | STRING)) SEMI
+VarDec ::= (Types | CustomObject) ID ASSIGN (new (Types | CustomObject) | (DIGIT | STRING)) SEMI
 
 
-private AccessModifier ::= (public | private | protected)
-private Access_Types ::= (abstract | final | static | sealed | partial | extern | intern)
+
+AccessModifier ::= (public | private | protected | internal)
+TypeModifier ::= (abstract | async | const | event | extern | new | override | partial | readonly | sealed |
+                  static | unsafe | virtual | volatile) // todo split into method modifiers w/ rules
+
+Types ::= (bool | byte | sbyte | char | decimal | double | float | int | uint | long | ulong | object | short |
+           ushort | string) Array?
+ValueTypes ::= (struct | enum)
+ReferenceTypes ::= (class | interface | delegate)
+
+ReservedWords ::= (as | base | break | case | catch | continue | do | else | false | finally | for | foreach | goto |
+                   if | in | is | lock | namespace | new | null | out | ref | return | sizeof | stackalloc | switch |
+                   this | throw | true | try | typeof | using | while | var | yield)
+
 private Return_type ::= (void | Types | CustomObject)
-private CustomObject ::= IDENTIFIER Array?
-private Types ::= (int | string | byte | object| enum | bool) Array?
+private CustomObject ::= ID Array?
 private Array ::= (LBRACK RBRACK)
 
 
