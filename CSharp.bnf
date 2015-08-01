@@ -78,16 +78,17 @@ ImportList ::= ImportDec*
 ImportDec ::= using ID (ID | DOT)* SEMI
 NamespaceDec ::= namespace ID LBRACE ClassList RBRACE
 ClassList ::= ClassDec*
-ClassDec ::= AccessModifier? ReferenceTypes ID LBRACE MethodList RBRACE
+ClassDec ::= (AccessModifier? ReferenceTypes ID LBRACE MethodList RBRACE)
 
-MethodList ::= MethodDec*
+MethodList ::= (MethodDec | EnumDec | VarDec)*
 MethodDec ::= AccessModifier? TypeModifier* Return_type ID LPAREN(Types ID)* RPAREN LBRACE Expr* RBRACE
 {pin=8}
+EnumDec ::= AccessModifier? enum ID LBRACE (ID ',')* ID* RBRACE
 
 Expr ::= (VarDec)
 
-VarDec ::= (BoolDec | ByteDec | CharDec | FloatDec | IntDec | LongDec | ShortDec | StringDec | ObjectDec |
-            CustomObjectDec)
+VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec | IntDec | LongDec | ShortDec |
+                                          StringDec | ObjectDec | CustomObjectDec)
 
 BoolDec ::= bool ID ASSIGN (true | false) SEMI
 ByteDec ::= byte ID ASSIGN (0x DIGIT+)  SEMI // todo
@@ -97,8 +98,10 @@ IntDec ::= u?int ID ASSIGN DIGIT SEMI
 LongDec ::= u?long ID ASSIGN DIGIT SEMI
 ShortDec ::= u?short ID ASSIGN DIGIT SEMI
 StringDec ::= string ID ASSIGN STRING SEMI
-ObjectDec ::= object ID ASSIGN new object LPAREN (ID | STRING) RPAREN SEMI
-CustomObjectDec ::= CustomObject ID ASSIGN new CustomObject LPARAN ID RPAREN SEMI
+ObjectDec ::= object ID ASSIGN new object LPAREN (ID | DIGIT | STRING) RPAREN SEMI
+CustomObjectDec ::= CustomObject ID ASSIGN new CustomObject LPAREN (ID | DIGIT | STRING) RPAREN SEMI
+
+Parameter ::= ID LPAREN ((ValueTypes | ID) ID ','*)* RPAREN
 
 
 
