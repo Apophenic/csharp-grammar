@@ -85,7 +85,7 @@ MethodDec ::= AccessModifier? TypeModifier* Return_type ID LPAREN(Types ID)* RPA
 {pin=8}
 EnumDec ::= AccessModifier? enum ID LBRACE (ID ',')* ID* RBRACE
 
-Expr ::= (VarDec)
+Expr ::= (VarDec | Switch | MethodCall | Property)
 
 VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec | IntDec | LongDec | ShortDec |
                                           StringDec | ObjectDec | CustomObjectDec)
@@ -94,18 +94,22 @@ BoolDec ::= bool ID ASSIGN (true | false) SEMI {pin=2}
 ByteDec ::= byte ID ASSIGN (0x DIGIT+) SEMI {pin=2} // todo
 CharDec ::= char ID ASSIGN APOS ([a-zA-Z0-9] | (BACK ('u' | 'x') DIGIT{4})) APOS SEMI {pin=2}
 FloatDec ::= float ID ASSIGN DIGIT '.'* 'f' SEMI {pin=2}
-IntDec ::= u?int ID ASSIGN DIGIT SEMI {pin=2}
-LongDec ::= u?long ID ASSIGN DIGIT SEMI {pin=2}
-ShortDec ::= u?short ID ASSIGN DIGIT SEMI {pin=2}
+IntDec ::= u?int ID ASSIGN DIGIT SEMI {pin=3}
+LongDec ::= u?long ID ASSIGN DIGIT SEMI {pin=3}
+ShortDec ::= u?short ID ASSIGN DIGIT SEMI {pin=3}
 StringDec ::= 'string' ID ASSIGN STRING SEMI {pin=2}
 ObjectDec ::= object ID ASSIGN new object LPAREN (ID | DIGIT | STRING) RPAREN SEMI {pin=2}
 CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new CustomObject LPAREN (ID | DIGIT | STRING)
                     RPAREN) SEMI {pin=2}
 
-
 private Cast ::= LPAREN (Types | CustomObject) RPAREN
 
-Parameter ::= ID LPAREN ((ValueTypes | ID) ID ','*)* RPAREN
+Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
+
+MethodCall ::= (ID '.')? ID LPAREN (ID ',')* (STRING | DIGIT | ID) RPAREN SEMI
+Property ::= CustomObject '.' ID
+
+Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
 
 
 
