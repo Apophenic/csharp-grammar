@@ -85,7 +85,9 @@ MethodDec ::= AccessModifier? TypeModifier* Return_type ID LPAREN(Types ID)* RPA
 {pin=8}
 EnumDec ::= AccessModifier? enum ID LBRACE (ID ',')* ID* RBRACE
 
-Expr ::= (VarDec | Switch | MethodCall | Property)
+
+
+Expr ::= (VarDec | Switch | Using | Return | MethodCall | Property)
 
 VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec | IntDec | LongDec | ShortDec |
                                           StringDec | ObjectDec | CustomObjectDec | ListDec | PreprocessorDec)
@@ -104,16 +106,18 @@ CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new Cus
 ListDec ::= List '<' (Types | CustomObject) '>' ID ASSIGN new List '<' (Types | CustomObject) '>' LPAREN RPAREN SEMI
 
 PreprocessorDec ::= '#'(if | else | elif | endif | define | undef | warning | error | line | region |
-                        endregion | pragma | pragma warning | pragma checksum) ID
+                        endregion | pragma | pragma warning | pragma checksum) ID+
 
 private Cast ::= LPAREN (Types | CustomObject) RPAREN
 
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
 
-MethodCall ::= (ID '.')? ID LPAREN (ID ',')* (STRING | DIGIT | ID) RPAREN SEMI
+MethodCall ::= (ID '.')? ID LPAREN (ID('.'ID)? ',')* (STRING | DIGIT | ID('.'ID)?) RPAREN SEMI?
 Property ::= CustomObject '.' ID
 
 Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
+Using ::= using LPAREN CustomObject ID ASSIGN new MethodCall RPAREN LBRACE Expr* RBRACE
+Return ::= return Expr SEMI
 
 
 
