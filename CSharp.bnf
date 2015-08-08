@@ -89,24 +89,20 @@ EnumDec ::= AccessModifier? enum ID LBRACE (ID ',')* ID* RBRACE
 
 Expr ::= (VarDec | Switch | Using | Return | MethodCall | Property)
 
-VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec | IntDec | LongDec | ShortDec |
+VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec | IntDec |
                                           StringDec | ObjectDec | CustomObjectDec | ListDec | PreprocessorDec)
 
 BoolDec ::= bool ID ASSIGN (true | false) SEMI {pin=2}
 ByteDec ::= byte ID ASSIGN (0x DIGIT+) SEMI {pin=2} // todo
 CharDec ::= char ID ASSIGN APOS ([a-zA-Z0-9] | (BACK ('u' | 'x') DIGIT{4})) APOS SEMI {pin=2}
-FloatDec ::= float ID ASSIGN DIGIT '.'* 'f' SEMI {pin=2}
-IntDec ::= u?int ID ASSIGN DIGIT SEMI {pin=3}
-LongDec ::= u?long ID ASSIGN DIGIT SEMI {pin=3}
-ShortDec ::= u?short ID ASSIGN DIGIT SEMI {pin=3}
+FloatDec ::= float ID ASSIGN DIGIT '.'? 'f' SEMI {pin=2}
+IntDec ::= u?(int | long | short) ID ASSIGN DIGIT SEMI {pin=3}
 StringDec ::= 'string' ID ASSIGN STRING SEMI {pin=2}
 ObjectDec ::= object ID ASSIGN new object LPAREN (ID | DIGIT | STRING) RPAREN SEMI {pin=2}
 CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new CustomObject LPAREN (ID | DIGIT | STRING)
                     RPAREN) SEMI {pin=2}
 ListDec ::= List '<' (Types | CustomObject) '>' ID ASSIGN new List '<' (Types | CustomObject) '>' LPAREN RPAREN SEMI
 
-PreprocessorDec ::= '#'(if | else | elif | endif | define | undef | warning | error | line | region |
-                        endregion | pragma | pragma warning | pragma checksum) ID+
 
 private Cast ::= LPAREN (Types | CustomObject) RPAREN
 
@@ -119,16 +115,16 @@ Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* defaul
 Using ::= using LPAREN CustomObject ID ASSIGN new MethodCall RPAREN LBRACE Expr* RBRACE
 Return ::= return Expr SEMI
 
-
-
-AccessModifier ::= (public | private | protected | internal)
-TypeModifier ::= (abstract | async | const | event | extern | new | override | partial | readonly | sealed |
-                  static | unsafe | virtual | volatile) // todo split into method modifiers w/ rules
-
 Types ::= (bool | byte | sbyte | char | decimal | double | float | int | uint | long | ulong | object | short |
            ushort | 'string') Array?    // todo
 ValueTypes ::= (struct | enum)
 ReferenceTypes ::= (class | interface | delegate)
+
+PreprocessorDec ::= '#'(if | else | elif | endif | define | undef | warning | error | line | region |
+                        endregion | pragma | pragma warning | pragma checksum) ID+
+AccessModifier ::= (public | private | protected | internal)
+TypeModifier ::= (abstract | async | const | event | extern | new | override | partial | readonly | sealed |
+                  static | unsafe | virtual | volatile) // todo split into method modifiers w/ rules
 
 ReservedWords ::= (as | base | break | case | catch | continue | do | else | false | finally | for | foreach | goto |
                    if | in | is | lock | namespace | new | null | out | ref | return | sizeof | stackalloc | switch |
