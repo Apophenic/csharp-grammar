@@ -102,12 +102,13 @@ CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new Cus
                     RPAREN) SEMI {pin=2}
 ListDec ::= List '<' (Types | CustomObject) '>' ID ASSIGN new List '<' (Types | CustomObject) '>' LPAREN RPAREN SEMI
 
-QualifiedClassDec ::= 'System' '.' (ID '.')* MethodCall
+QualifiedClassDec ::= 'System' ('.' ID)+ Argument SEMI {pin=2}
 
 
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
+Argument ::= LPAREN ((Property | CustomObject | ID) ','?) RPAREN
 
-MethodCall ::= (ID '.')? ID LPAREN (ID('.'ID)? ',')* (STRING | DIGIT | ID('.'ID)?) RPAREN SEMI?
+MethodCall ::= (QualifiedClassDec | ID) LPAREN ((QualifiedClassDec | Property | ID) ','?)* RPAREN SEMI?
 Property ::= CustomObject '.' ID
 
 Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
