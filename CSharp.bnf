@@ -110,14 +110,14 @@ QualifiedClassDec ::= 'System' ('.' ID)+ Argument SEMI {pin=2}
 
 
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
-Argument ::= LPAREN ((Property | CustomObject | ID) ','?) RPAREN
-Invocation ::= new (QualifiedClassDec | CustomObject | Types | ID) Parameter?
+Argument ::= LPAREN ((Property | CustomObject) ','?)* RPAREN
+Invocation ::= new (QualifiedClassDec | Types | CustomObject) Argument?
 
-MethodCall ::= (QualifiedClassDec | ID) ('.'(QualifiedClassDec | ID))? Argument? SEMI?
+MethodCall ::= (QualifiedClassDec | ID) ('.'(QualifiedClassDec | ID))? Argument? SEMI
 Property ::= CustomObject '.' ID
 
 Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
-Using ::= using LPAREN CustomObject ID ASSIGN new MethodCall RPAREN LBRACE Expr* RBRACE {pin=9}
+Using ::= using LPAREN CustomObject ID ASSIGN Invocation RPAREN LBRACE Expr* RBRACE {pin=9}
 Return ::= return Expr
 
 
