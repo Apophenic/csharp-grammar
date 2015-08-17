@@ -86,7 +86,7 @@ Expr* RBRACE
 EnumDec ::= AccessModifier? enum ID LBRACE (ID ',')* ID* RBRACE
 
 
-Expr ::= (VarDec | QualifiedClassDec | Switch | Using | Return | MethodCall | Property)
+Expr ::= (VarDec | QualifiedClassDec | Switch | Using | Return | IfStatement | MethodCall | Property)
 
 VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec | IntDec |
                                           StringDec | ObjectDec | CustomObjectDec | ListDec |
@@ -119,6 +119,8 @@ Property ::= CustomObject '.' ID
 Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
 Using ::= using LPAREN CustomObject ID ASSIGN Invocation RPAREN LBRACE Expr* RBRACE {pin=9}
 Return ::= return Expr
+IfStatement ::= if LPAREN (Expr | DIGIT | STRING) EQ (Expr | DIGIT | STRING) RPAREN LBRACE? Expr* RBRACE? {pin=6}
+
 
 
 Types ::= (bool | byte | sbyte | char | decimal | double | float | int | uint | long | ulong | object | short |
