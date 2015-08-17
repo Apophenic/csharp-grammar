@@ -119,7 +119,10 @@ Property ::= CustomObject '.' ID
 Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
 Using ::= using LPAREN CustomObject ID ASSIGN Invocation RPAREN LBRACE Expr* RBRACE {pin=9}
 Return ::= return Expr
-IfStatement ::= if LPAREN (Expr | DIGIT | STRING) EQ (Expr | DIGIT | STRING) RPAREN LBRACE? Expr* RBRACE? {pin=6}
+IfStatement ::= if LPAREN (Expr | DIGIT | STRING) EQ (Expr | DIGIT | STRING) RPAREN LBRACE? Expr* RBRACE?
+                ElseIfStatement* ElseStatement? {pin=6}
+private ElseStatement ::= else LBRACE? Expr RBRACE? {pin=1}
+private ElseIfStatement ::= else IfStatement? LBRACE LBRACE? Expr RBRACE? {pin=2}
 
 
 
