@@ -122,7 +122,7 @@ Return ::= return Expr
 IfStatement ::= if LPAREN (Expr | DIGIT | STRING) EQ (Expr | DIGIT | STRING) RPAREN LBRACE? Expr* RBRACE?
                 ElseIfStatement* ElseStatement? {pin=6}
 private ElseStatement ::= else LBRACE? Expr RBRACE? {pin=1}
-private ElseIfStatement ::= else IfStatement? LBRACE LBRACE? Expr RBRACE? {pin=2}
+private ElseIfStatement ::= else IfStatement? LBRACE? Expr RBRACE? {pin=2}
 
 
 
