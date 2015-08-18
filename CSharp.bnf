@@ -81,8 +81,7 @@ ClassList ::= ClassDec*
 ClassDec ::= (AccessModifier? TypeModifier? ReferenceTypes ID LBRACE MethodList RBRACE)
 MethodList ::= (MethodDec | EnumDec | VarDec)*
 MethodDec ::= AccessModifier? TypeModifier* Return_type ID LPAREN ((Types | CustomObject) ID ','?)* RPAREN LBRACE
-Expr* RBRACE
-{pin=8}
+              Expr* RBRACE {pin=8}
 EnumDec ::= AccessModifier? enum ID LBRACE (ID ',')* ID* RBRACE
 
 
@@ -92,7 +91,7 @@ VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec
                                           StringDec | ObjectDec | NewTypeDec  | ListDec |
                                           GeneralDec | PreprocessorDec | CustomObjectDec)
 
-GeneralDec ::= CustomObject ASSIGN MethodCall
+GeneralDec ::= (Property | CustomObject) ASSIGN (MethodCall | Types | null | CustomObject) SEMI?
 NewTypeDec ::= (Types | CustomObject) ID ASSIGN new? (Types | MethodCall) SEMI?
 
 BoolDec ::= bool ID ASSIGN (true | false) SEMI {pin=2}
@@ -118,7 +117,7 @@ Property ::= CustomObject ('.' ID)+ SEMI?
 Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
 Using ::= using LPAREN CustomObject ID ASSIGN Invocation RPAREN LBRACE Expr* RBRACE {pin=9}
 Return ::= return Expr
-IfStatement ::= if LPAREN (Expr | DIGIT | STRING) EQ (Expr | DIGIT | STRING) RPAREN LBRACE? Expr* RBRACE?
+IfStatement ::= if LPAREN (Expr | CustomObject | DIGIT | STRING) EQ (Expr | DIGIT | STRING) RPAREN LBRACE? Expr* RBRACE?
                 ElseIfStatement* ElseStatement? {pin=6}
 private ElseStatement ::= else LBRACE? Expr* RBRACE? {pin=1}
 private ElseIfStatement ::= else IfStatement LBRACE? Expr RBRACE? {pin=2}
