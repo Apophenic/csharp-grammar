@@ -89,11 +89,12 @@ EnumDec ::= AccessModifier? enum ID LBRACE (ID ',')* ID* RBRACE
 Expr ::= (VarDec | QualifiedClassDec | Switch | Using | Return | IfStatement | MethodCall | Property)
 
 VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec | IntDec |
-                                          StringDec | ObjectDec | CustomObjectDec | ListDec |
-                                          NewTypeDec | PreprocessorDec | GeneralDec)
-
+                                          StringDec | ObjectDec | NewTypeDec  | ListDec |
+                                          GeneralDec | PreprocessorDec | CustomObjectDec)
 
 GeneralDec ::= CustomObject ASSIGN MethodCall
+NewTypeDec ::= (Types | CustomObject) ID ASSIGN new? (Types | MethodCall) SEMI?
+
 BoolDec ::= bool ID ASSIGN (true | false) SEMI {pin=2}
 ByteDec ::= byte ID ASSIGN (0x DIGIT+) SEMI {pin=2} // todo
 CharDec ::= char ID ASSIGN APOS ([a-zA-Z0-9] | (BACK ('u' | 'x') DIGIT{4})) APOS SEMI {pin=2}
@@ -101,32 +102,35 @@ FloatDec ::= float ID ASSIGN DIGIT '.'? 'f' SEMI {pin=2}
 IntDec ::= u?(int | long | short) ID ASSIGN DIGIT SEMI {pin=3}
 StringDec ::= 'string' ID ASSIGN STRING SEMI {pin=2}
 ObjectDec ::= object ID ASSIGN new object LPAREN (ID | DIGIT | STRING) RPAREN SEMI {pin=2}
+ListDec ::= List '<' (Types | CustomObject) '>' ID ASSIGN new List '<' (Types | CustomObject) '>' LPAREN RPAREN SEMI
+QualifiedClassDec ::= 'System' ('.' ID)+ Argument SEMI {pin=2}
 CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new CustomObject LPAREN (ID | DIGIT | STRING)
                     RPAREN) SEMI {pin=2}
-ListDec ::= List '<' (Types | CustomObject) '>' ID ASSIGN new List '<' (Types | CustomObject) '>' LPAREN RPAREN SEMI
-
-NewTypeDec ::= Types ID ASSIGN new? (Types | MethodCall) SEMI
-
-QualifiedClassDec ::= 'System' ('.' ID)+ Argument SEMI {pin=2}
 
 
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
 Argument ::= LPAREN Cast? ((QualifiedClassDec | Invocation | Property | DIGIT | CustomObject) ','?)* RPAREN
 Invocation ::= new (QualifiedClassDec | Types | CustomObject) Argument?
 
-MethodCall ::= (QualifiedClassDec | ID) ('.'(QualifiedClassDec | CustomObject))? Argument? SEMI?
-Property ::= CustomObject ('.' ID)+
+MethodCall ::= (QualifiedClassDec | ID) ('.'(QualifiedClassDec | CustomObject))? Argument SEMI?
+Property ::= CustomObject ('.' ID)+ SEMI?
 
 Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
 Using ::= using LPAREN CustomObject ID ASSIGN Invocation RPAREN LBRACE Expr* RBRACE {pin=9}
 Return ::= return Expr
 IfStatement ::= if LPAREN (Expr | DIGIT | STRING) EQ (Expr | DIGIT | STRING) RPAREN LBRACE? Expr* RBRACE?
                 ElseIfStatement* ElseStatement? {pin=6}
-private ElseStatement ::= else LBRACE? Expr RBRACE? {pin=1}
-private ElseIfStatement ::= else IfStatement? LBRACE? Expr RBRACE? {pin=2}
+private ElseStatement ::= else LBRACE? Expr* RBRACE? {pin=1}
+private ElseIfStatement ::= else IfStatement LBRACE? Expr RBRACE? {pin=2}
 
 
+private Return_type ::= (void | Types | CustomObject)
+private Cast ::= LPAREN (Types | CustomObject) RPAREN
+private CustomObject ::= ID Array?
+private Array ::= LBRACK (ID | DIGIT | STRING)? RBRACK
 
+
+/* Tokens */
 Types ::= (bool | byte | sbyte | char | decimal | double | float | int | uint | long | ulong | object | short |
            ushort | 'string') Array?    // todo
 ValueTypes ::= (struct | enum)
@@ -141,10 +145,5 @@ TypeModifier ::= (abstract | async | const | event | extern | new | override | p
 ReservedWords ::= (as | base | break | case | catch | continue | do | else | false | finally | for | foreach | goto |
                    if | in | is | lock | namespace | new | null | out | ref | return | sizeof | stackalloc | switch |
                    this | throw | true | try | typeof | using | while | var | yield)
-
-private Return_type ::= (void | Types | CustomObject)
-private Cast ::= LPAREN (Types | CustomObject) RPAREN
-private CustomObject ::= ID Array?
-private Array ::= LBRACK (ID | DIGIT | STRING)? RBRACK
 
 
