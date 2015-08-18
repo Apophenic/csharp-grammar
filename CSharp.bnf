@@ -92,7 +92,7 @@ VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec
                                           GeneralDec | PreprocessorDec | CustomObjectDec)
 
 GeneralDec ::= (Property | CustomObject) ASSIGN (MethodCall | Types | null | CustomObject) SEMI?
-NewTypeDec ::= (Types | CustomObject) ID ASSIGN new? (Types | MethodCall) SEMI?
+NewTypeDec ::= ((Types | CustomObject) ID | Property) ASSIGN new? (Types | MethodCall) SEMI?
 
 BoolDec ::= bool ID ASSIGN (true | false) SEMI {pin=2}
 ByteDec ::= byte ID ASSIGN (0x DIGIT+) SEMI {pin=2} // todo
@@ -108,7 +108,7 @@ CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new Cus
 
 
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
-Argument ::= LPAREN Cast? ((QualifiedClassDec | Invocation | Property | DIGIT | CustomObject) ','?)* RPAREN
+Argument ::= LPAREN Cast? ((QualifiedClassDec | Invocation | Property | DIGIT | MethodCall | CustomObject) ','?)* RPAREN
 Invocation ::= new (QualifiedClassDec | Types | CustomObject) Argument?
 
 MethodCall ::= (QualifiedClassDec | ID) ('.'(QualifiedClassDec | CustomObject))? Argument SEMI?
