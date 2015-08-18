@@ -90,9 +90,10 @@ Expr ::= (VarDec | QualifiedClassDec | Switch | Using | Return | IfStatement | M
 
 VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec | IntDec |
                                           StringDec | ObjectDec | CustomObjectDec | ListDec |
-                                          NewTypeDec | PreprocessorDec)
+                                          NewTypeDec | PreprocessorDec | GeneralDec)
 
 
+GeneralDec ::= CustomObject ASSIGN MethodCall
 BoolDec ::= bool ID ASSIGN (true | false) SEMI {pin=2}
 ByteDec ::= byte ID ASSIGN (0x DIGIT+) SEMI {pin=2} // todo
 CharDec ::= char ID ASSIGN APOS ([a-zA-Z0-9] | (BACK ('u' | 'x') DIGIT{4})) APOS SEMI {pin=2}
@@ -104,17 +105,17 @@ CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new Cus
                     RPAREN) SEMI {pin=2}
 ListDec ::= List '<' (Types | CustomObject) '>' ID ASSIGN new List '<' (Types | CustomObject) '>' LPAREN RPAREN SEMI
 
-NewTypeDec ::= Types ID ASSIGN new Types SEMI
+NewTypeDec ::= Types ID ASSIGN new? (Types | MethodCall) SEMI
 
 QualifiedClassDec ::= 'System' ('.' ID)+ Argument SEMI {pin=2}
 
 
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
-Argument ::= LPAREN ((QualifiedClassDec | Invocation | Property | DIGIT | CustomObject) ','?)* RPAREN
+Argument ::= LPAREN Cast? ((QualifiedClassDec | Invocation | Property | DIGIT | CustomObject) ','?)* RPAREN
 Invocation ::= new (QualifiedClassDec | Types | CustomObject) Argument?
 
 MethodCall ::= (QualifiedClassDec | ID) ('.'(QualifiedClassDec | CustomObject))? Argument? SEMI?
-Property ::= CustomObject '.' ID
+Property ::= CustomObject ('.' ID)+
 
 Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
 Using ::= using LPAREN CustomObject ID ASSIGN Invocation RPAREN LBRACE Expr* RBRACE {pin=9}
