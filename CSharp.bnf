@@ -91,8 +91,8 @@ VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec
                                           StringDec | ObjectDec | NewTypeDec  | ListDec |
                                           GeneralDec | PreprocessorDec | CustomObjectDec)
 
-GeneralDec ::= (Property | CustomObject) ASSIGN (MethodCall | Types | null | CustomObject) SEMI?
-NewTypeDec ::= ((Types | CustomObject) ID | Property) ASSIGN new? (Types | MethodCall) SEMI?
+GeneralDec ::= (Property | CustomObject) ASSIGN (MethodCall | Property | Bool | null | CustomObject) SEMI?
+NewTypeDec ::= ((Types | CustomObject) ID | Property) ASSIGN new? (Types | MethodCall | QualifiedClassDec) SEMI?
 
 BoolDec ::= bool ID ASSIGN (true | false) SEMI {pin=2}
 ByteDec ::= byte ID ASSIGN (0x DIGIT+) SEMI {pin=2} // todo
@@ -108,14 +108,15 @@ CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new Cus
 
 
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
-Argument ::= LPAREN Cast? ((QualifiedClassDec | Invocation | Property | DIGIT | MethodCall | CustomObject) ','?)* RPAREN
+Argument ::= LPAREN Cast? ((QualifiedClassDec | Invocation | Property | DIGIT | String | null | MethodCall | Bool |
+             CustomObject) ','?)* RPAREN
 Invocation ::= new (QualifiedClassDec | Types | CustomObject) Argument?
 
 MethodCall ::= (QualifiedClassDec | ID) ('.'(QualifiedClassDec | CustomObject))? Argument SEMI?
 Property ::= CustomObject ('.' ID)+ SEMI?
 
 Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
-Using ::= using LPAREN CustomObject ID ASSIGN Invocation RPAREN LBRACE Expr* RBRACE {pin=9}
+Using ::= using LPAREN CustomObject ID ASSIGN (Invocation | MethodCall) RPAREN LBRACE Expr* RBRACE {pin=9}
 Return ::= return Expr
 IfStatement ::= if LPAREN (Expr | CustomObject | DIGIT | STRING) EQ (Expr | DIGIT | STRING) RPAREN LBRACE? Expr* RBRACE?
                 ElseIfStatement* ElseStatement? {pin=6}
@@ -132,6 +133,7 @@ private Array ::= LBRACK (ID | DIGIT | STRING)? RBRACK
 /* Tokens */
 Types ::= (bool | byte | sbyte | char | decimal | double | float | int | uint | long | ulong | object | short |
            ushort | 'string') Array?    // todo
+Bool ::= true | false
 ValueTypes ::= (struct | enum)
 ReferenceTypes ::= (class | interface | delegate)
 
