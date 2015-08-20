@@ -91,7 +91,7 @@ VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec
                                           StringDec | ObjectDec | NewTypeDec  | ListDec |
                                           GeneralDec | PreprocessorDec | CustomObjectDec)
 
-GeneralDec ::= Types? (Property | CustomObject) ASSIGN (MethodCall | Property | Bool | null | DIGIT | CustomObject)
+GeneralDec ::= Types? (Property | CustomObject) ASSIGN (Property | MethodCall | Bool | null | DIGIT | CustomObject)
                SEMI?
 NewTypeDec ::= ((Types | CustomObject) ID | Property) ASSIGN new? (Types | MethodCall | QualifiedClassDec) SEMI?
 
@@ -112,12 +112,12 @@ Arithmetic ::= ((MethodCall | Property| DIGIT) Operator (MethodCall | Property| 
 
 
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
-Argument ::= LPAREN Cast? ((QualifiedClassDec | Invocation | MethodCall | Property | DIGIT | String | null | Bool |
+Argument ::= LPAREN Cast? ((QualifiedClassDec | Invocation | MethodCall | Property | DIGIT | STRING | null | Bool |
              CustomObject) ','?)* RPAREN
 Invocation ::= new (QualifiedClassDec | Types | CustomObject) Argument?
 
 MethodCall ::= (QualifiedClassDec | ID) ('.'(QualifiedClassDec | CustomObject))? Argument SEMI?
-Property ::= CustomObject ('.' ID)+ SEMI?
+Property ::= (MethodCall | CustomObject) ('.' ID)+ SEMI?
 
 Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
 Using ::= using LPAREN CustomObject ID ASSIGN (Invocation | MethodCall | Property) RPAREN LBRACE Expr* RBRACE {pin=9}
