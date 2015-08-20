@@ -85,7 +85,8 @@ MethodDec ::= AccessModifier? TypeModifier* Return_type ID LPAREN ((Types | Cust
 EnumDec ::= AccessModifier? enum ID LBRACE (ID ',')* ID* RBRACE
 
 
-Expr ::= (VarDec | QualifiedClassDec | Switch | Using | Return | IfStatement | MethodCall | Property)
+Expr ::= (VarDec | QualifiedClassDec | Switch | Using | Return | ForStatement | ForEachStatement| IfStatement |
+          MethodCall | Property)
 
 VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec | IntDec |
                                           StringDec | ObjectDec | NewTypeDec  | ListDec |
@@ -99,7 +100,7 @@ BoolDec ::= bool ID ASSIGN (true | false) SEMI {pin=2}
 ByteDec ::= byte ID ASSIGN (0x DIGIT+) SEMI {pin=2} // todo
 CharDec ::= char ID ASSIGN APOS ([a-zA-Z0-9] | (BACK ('u' | 'x') DIGIT{4})) APOS SEMI {pin=2}
 FloatDec ::= float ID ASSIGN DIGIT '.'? 'f' SEMI {pin=2}
-IntDec ::= u?(int | long | short) ID ASSIGN Arithmetic SEMI {pin=3}
+IntDec ::= u?(int | long | short) ID ASSIGN (Arithmetic | DIGIT) SEMI {pin=3}
 StringDec ::= 'string' ID ASSIGN STRING SEMI {pin=2}
 ObjectDec ::= object ID ASSIGN new object LPAREN (ID | DIGIT | STRING) RPAREN SEMI {pin=2}
 ListDec ::= List '<' (Types | CustomObject) '>' ID ASSIGN new List '<' (Types | CustomObject) '>' LPAREN RPAREN SEMI
@@ -107,8 +108,8 @@ QualifiedClassDec ::= 'System' ('.' ID)+ Argument SEMI {pin=2}
 CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new CustomObject LPAREN (ID | DIGIT | STRING)
                     RPAREN) SEMI {pin=2}
 
-Arithmetic ::= ((MethodCall | Property| DIGIT) Operator (MethodCall | Property| DIGIT))
-                (Operator (MethodCall | Property| DIGIT))*
+Arithmetic ::= ((MethodCall | Property| DIGIT | ID) Operator (MethodCall | Property| DIGIT | ID))
+                (Operator (MethodCall | Property | DIGIT | ID))*
 
 
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
@@ -119,6 +120,9 @@ Invocation ::= new (QualifiedClassDec | Types | CustomObject) Argument?
 MethodCall ::= (QualifiedClassDec | ID) ('.'(QualifiedClassDec | CustomObject))? Argument SEMI?
 Property ::= (MethodCall | CustomObject) ('.' ID)+ SEMI?
 
+ForStatement ::= for LPAREN IntDec Arithmetic SEMI? ID PLUS_PLUS RPAREN LBRACE? Expr*   // todo double operators
+                 RBRACE? {pin=10}
+ForEachStatement ::= foreach LPAREN (Types | CustomObject) ID in (MethodCall) RPAREN LBRACE? Expr* RBRACE? {pin=8}
 Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
 Using ::= using LPAREN CustomObject ID ASSIGN (Invocation | MethodCall | Property) RPAREN LBRACE Expr* RBRACE {pin=9}
 Return ::= return Expr
@@ -131,10 +135,10 @@ private ElseIfStatement ::= else IfStatement LBRACE? Expr RBRACE? {pin=2}
 private Return_type ::= (void | Types | CustomObject)
 private Cast ::= LPAREN (Types | CustomObject) RPAREN
 private CustomObject ::= ID Array?
-private Array ::= LBRACK (ID | DIGIT | STRING)? RBRACK
+private Array ::= LBRACK (Arithmetic | ID | DIGIT | STRING)? RBRACK
 
 
-/* Tokens */
+/* Tokens */ // temp
 Types ::= (bool | byte | sbyte | char | decimal | double | float | int | uint | long | ulong | object | short |
            ushort | 'string') Array?    // todo
 Bool ::= true | false
