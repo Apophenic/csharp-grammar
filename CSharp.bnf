@@ -92,7 +92,7 @@ VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec
                                           StringDec | ObjectDec | NewTypeDec  | ListDec |
                                           GeneralDec | PreprocessorDec | CustomObjectDec)
 
-GeneralDec ::= Types? (Property | CustomObject) ASSIGN Cast? (Property | MethodCall | Bool | null | DIGIT |
+GeneralDec ::= Types? (Property | CustomObject) ASSIGN Cast? (Arithmetic | Property | MethodCall | Bool | null | DIGIT |
                CustomObject) SEMI?
 NewTypeDec ::= ((Types | CustomObject) ID | Property) ASSIGN new? (Types | MethodCall | QualifiedClassDec) SEMI?
 
@@ -108,7 +108,7 @@ QualifiedClassDec ::= 'System' ('.' ID)+ Argument SEMI {pin=2}
 CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new CustomObject LPAREN (ID | DIGIT | STRING)
                     RPAREN) SEMI {pin=2}
 
-Arithmetic ::= ((MethodCall | Property| DIGIT | ID) Operator (MethodCall | Property| DIGIT | ID))
+Arithmetic ::= ((MethodCall | Property| DIGIT | ID) Operator (MethodCall | Property| DIGIT | CustomObject))
                 (Operator (MethodCall | Property | DIGIT | ID))*
 
 
@@ -140,7 +140,7 @@ private Array ::= LBRACK (Arithmetic | ID | DIGIT | STRING)? RBRACK
 
 /* Tokens */ // temp
 Types ::= (bool | byte | sbyte | char | decimal | double | float | int | uint | long | ulong | object | short |
-           ushort | 'string') Array?    // todo
+           ushort | var | 'string') Array?    // todo
 Bool ::= true | false
 ValueTypes ::= (struct | enum)
 ReferenceTypes ::= (class | interface | delegate)
