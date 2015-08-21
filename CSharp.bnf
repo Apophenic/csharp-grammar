@@ -103,17 +103,18 @@ FloatDec ::= float ID ASSIGN DIGIT '.'? 'f' SEMI {pin=2}
 IntDec ::= u?(int | long | short) ID ASSIGN (Arithmetic | DIGIT) SEMI {pin=3}
 StringDec ::= 'string' ID ASSIGN STRING SEMI {pin=2}
 ObjectDec ::= object ID ASSIGN new object LPAREN (ID | DIGIT | STRING) RPAREN SEMI {pin=2}
-ListDec ::= List '<' (Types | CustomObject) '>' ID ASSIGN new List '<' (Types | CustomObject) '>' Argument SEMI
+ListDec ::= List '<' (Types | CustomObject) '>' ID ASSIGN ((new List '<' (Types | CustomObject) '>' Argument SEMI) |
+            MethodCall) // todo
 QualifiedClassDec ::= 'System' ('.' ID)+ Argument SEMI {pin=2}
 CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new CustomObject LPAREN (ID | DIGIT | STRING)
                     RPAREN) SEMI {pin=2}
 
-Arithmetic ::= ((MethodCall | Property| DIGIT | ID) Operator (MethodCall | Property| DIGIT | CustomObject))
-                (Operator (MethodCall | Property | DIGIT | ID))*
+Arithmetic ::= Cast? (MethodCall | Property| DIGIT | CustomObject) (Operator Cast? (MethodCall | Property| DIGIT |
+               CustomObject))+
 
 
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
-Argument ::= LPAREN Cast? ((QualifiedClassDec | Invocation | Arithmetic| MethodCall | Property | DIGIT | STRING |
+Argument ::= LPAREN (Cast? (QualifiedClassDec | Invocation | Arithmetic| MethodCall | Property | DIGIT | STRING |
              null | Bool | CustomObject) ','?)* RPAREN
 Invocation ::= new (QualifiedClassDec | Types | CustomObject) Argument?
 
