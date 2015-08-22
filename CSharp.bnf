@@ -103,7 +103,6 @@ CharDec ::= char ID ASSIGN APOS ([a-zA-Z0-9] | (BACK ('u' | 'x') DIGIT{4})) APOS
 FloatDec ::= float ID ASSIGN DIGIT '.'? 'f' SEMI {pin=2}
 IntDec ::= u?(int | long | short) ID ASSIGN (Arithmetic | DIGIT) SEMI {pin=3}
 StringDec ::= 'string' ID ASSIGN STRING SEMI {pin=2}
-ObjectDec ::= object ID ASSIGN new object LPAREN (ID | DIGIT | STRING) RPAREN SEMI {pin=2}
 ListDec ::= TypesWithGenerics ID ASSIGN ((new TypesWithGenerics) | MethodCall) SEMI?
 DictionaryDec ::= TypesWithGenerics ID ASSIGN ((new TypesWithGenerics) | MethodCall) SEMI
 QualifiedClassDec ::= 'System' ('.' ID)+ Argument SEMI {pin=2}
@@ -113,6 +112,7 @@ CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new Cus
 Arithmetic ::= Cast? (MethodCall | Property| DIGIT | CustomObject) (Operator Cast? (MethodCall | Property| DIGIT |
                CustomObject))+
 AssignArithmetic ::= CustomObject AssignOperator (CustomObject | DIGIT | STRING)?
+Comparison ::= (Expr | CustomObject | DIGIT | STRING) (CompareOperator (Expr | CustomObject | DIGIT | STRING))+
 
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
 Argument ::= LPAREN (Cast? (QualifiedClassDec | Invocation | Arithmetic| MethodCall | Property | DIGIT | STRING |
@@ -126,8 +126,8 @@ ForStatement ::= for LPAREN IntDec Arithmetic SEMI? AssignArithmetic RPAREN LBRA
 ForEachStatement ::= foreach LPAREN (Types | CustomObject) ID in (MethodCall) RPAREN LBRACE? Expr* RBRACE? {pin=8}
 Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
 Using ::= using LPAREN CustomObject ID ASSIGN (Invocation | MethodCall | Property) RPAREN LBRACE Expr* RBRACE {pin=9}
-Return ::= return Expr
-IfStatement ::= if LPAREN (Expr | CustomObject | DIGIT | STRING) (EQ | NOT_EQ) (Expr | DIGIT | STRING) RPAREN LBRACE?
+Return ::= return (Expr | ID) SEMI?
+IfStatement ::= if LPAREN Comparison RPAREN LBRACE?
                 Expr* RBRACE? ElseIfStatement* ElseStatement? {pin=6}
 private ElseStatement ::= else LBRACE? Expr* RBRACE? {pin=1}
 private ElseIfStatement ::= else IfStatement LBRACE? Expr RBRACE? {pin=2}
@@ -137,7 +137,7 @@ Exception ::= throw new MethodCall
 
 private Return_type ::= (void | Types | TypesWithGenerics | CustomObject)
 private Cast ::= LPAREN (Types | CustomObject) RPAREN
-private CustomObject ::= ID Array?
+private CustomObject ::= (ID Array?) | null
 private Array ::= LBRACK (Arithmetic | ID | DIGIT | STRING)? RBRACK
 
 
@@ -164,5 +164,6 @@ Operator ::= PLUS | MINUS | MUL | QUOTIENT | BIT_AND | BIT_OR | BIT_XOR | GREATE
 AssignOperator ::= PLUS_PLUS | PLUS_ASSIGN | MINUS_MINUS | MINUS_ASSIGN | MUL_ASSIGN | QUOTIENT_ASSIGN |
                    REMAINDER_ASSIGN | BIT_OR_ASSIGN | BIT_CLEAR_ASSIGN | BIT_AND_ASSIGN | BIT_XOR_ASSIGN |
                    SHIFT_LEFT_ASSIGN | SHIFT_RIGHT_ASSIGN
+CompareOperator ::= EQ | NOT_EQ | LESS | LESS_OR_EQUAL | GREATER | GREATER_OR_EQUAL | COND_OR | COND_AND
 
 
