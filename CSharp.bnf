@@ -87,11 +87,11 @@ EnumDec ::= AccessModifier? enum ID LBRACE (ID ',')* ID* RBRACE
 
 
 Expr ::= (VarDec | QualifiedClassDec | Arithmetic | Switch | Using | Return | ForStatement | ForEachStatement|
-          IfStatement | MethodCall | Property)
+          IfStatement | MethodCall | Property | Exception)
 
 VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec | IntDec |
                                           StringDec | ObjectDec | NewTypeDec  | ListDec |
-                                          GeneralDec | PreprocessorDec | CustomObjectDec)
+                                          GeneralDec | PreprocessorDec | CustomObjectDec | DictionaryDec)
 
 GeneralDec ::= Types? (Property | CustomObject+) ASSIGN Cast? (Arithmetic | Property | MethodCall | Bool | null |
                DIGIT | CustomObject) SEMI?
@@ -104,8 +104,8 @@ FloatDec ::= float ID ASSIGN DIGIT '.'? 'f' SEMI {pin=2}
 IntDec ::= u?(int | long | short) ID ASSIGN (Arithmetic | DIGIT) SEMI {pin=3}
 StringDec ::= 'string' ID ASSIGN STRING SEMI {pin=2}
 ObjectDec ::= object ID ASSIGN new object LPAREN (ID | DIGIT | STRING) RPAREN SEMI {pin=2}
-ListDec ::= List '<' (Types | CustomObject) '>' ID ASSIGN ((new List '<' (Types | CustomObject) '>' Argument SEMI) |
-            MethodCall) // todo
+ListDec ::= TypesWithGenerics ID ASSIGN ((new TypesWithGenerics) | MethodCall) SEMI?
+DictionaryDec ::= TypesWithGenerics ID ASSIGN ((new TypesWithGenerics) | MethodCall) SEMI
 QualifiedClassDec ::= 'System' ('.' ID)+ Argument SEMI {pin=2}
 CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new CustomObject LPAREN (ID | DIGIT | STRING)
                     RPAREN) SEMI {pin=2}
@@ -133,6 +133,8 @@ IfStatement ::= if LPAREN (Expr | CustomObject | DIGIT | STRING) (EQ | NOT_EQ) (
 private ElseStatement ::= else LBRACE? Expr* RBRACE? {pin=1}
 private ElseIfStatement ::= else IfStatement LBRACE? Expr RBRACE? {pin=2}
 
+Exception ::= throw new MethodCall
+
 
 private Return_type ::= (void | Types | TypesWithGenerics | CustomObject)
 private Cast ::= LPAREN (Types | CustomObject) RPAREN
@@ -143,7 +145,7 @@ private Array ::= LBRACK (Arithmetic | ID | DIGIT | STRING)? RBRACK
 /* Tokens */ // temp
 Types ::= (bool | byte | sbyte | char | decimal | double | float | int | uint | long | ulong | object | short |
            ushort | var | 'string') Array?    // todo
-TypesWithGenerics ::= (List | Dictionary) '<' (','? (Types | TypesWithGenerics | CustomObject))+ '>' Array?
+TypesWithGenerics ::= (List | Dictionary) '<' (','? (Types | TypesWithGenerics | CustomObject))+ '>' Argument?
 Bool ::= true | false
 ValueTypes ::= (struct | enum)
 ReferenceTypes ::= (class | interface | delegate)
