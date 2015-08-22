@@ -64,6 +64,7 @@
       APOS                 =  ''''
       QUOTE                =  '"'
       BACK                 =  '\'
+      MOD                  =  '%'
 
       WS                   = 'regexp:\s+'
       COMMENT              = 'regexp://.*'
@@ -85,15 +86,15 @@ MethodDec ::= AccessModifier? TypeModifier* Return_type ID LPAREN ((Types | Cust
 EnumDec ::= AccessModifier? enum ID LBRACE (ID ',')* ID* RBRACE
 
 
-Expr ::= (VarDec | QualifiedClassDec | Switch | Using | Return | ForStatement | ForEachStatement| IfStatement |
-          MethodCall | Property)
+Expr ::= (VarDec | QualifiedClassDec | Arithmetic | Switch | Using | Return | ForStatement | ForEachStatement|
+          IfStatement | MethodCall | Property)
 
 VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec | IntDec |
                                           StringDec | ObjectDec | NewTypeDec  | ListDec |
                                           GeneralDec | PreprocessorDec | CustomObjectDec)
 
-GeneralDec ::= Types? (Property | CustomObject) ASSIGN Cast? (Arithmetic | Property | MethodCall | Bool | null | DIGIT |
-               CustomObject) SEMI?
+GeneralDec ::= Types? (Property | CustomObject+) ASSIGN Cast? (Arithmetic | Property | MethodCall | Bool | null |
+               DIGIT | CustomObject) SEMI?
 NewTypeDec ::= ((Types | CustomObject) ID | Property) ASSIGN new? (Types | MethodCall | QualifiedClassDec) SEMI?
 
 BoolDec ::= bool ID ASSIGN (true | false) SEMI {pin=2}
@@ -127,13 +128,13 @@ ForEachStatement ::= foreach LPAREN (Types | CustomObject) ID in (MethodCall) RP
 Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
 Using ::= using LPAREN CustomObject ID ASSIGN (Invocation | MethodCall | Property) RPAREN LBRACE Expr* RBRACE {pin=9}
 Return ::= return Expr
-IfStatement ::= if LPAREN (Expr | CustomObject | DIGIT | STRING) EQ (Expr | DIGIT | STRING) RPAREN LBRACE? Expr* RBRACE?
-                ElseIfStatement* ElseStatement? {pin=6}
+IfStatement ::= if LPAREN (Expr | CustomObject | DIGIT | STRING) (EQ | NOT_EQ) (Expr | DIGIT | STRING) RPAREN LBRACE?
+                Expr* RBRACE? ElseIfStatement* ElseStatement? {pin=6}
 private ElseStatement ::= else LBRACE? Expr* RBRACE? {pin=1}
 private ElseIfStatement ::= else IfStatement LBRACE? Expr RBRACE? {pin=2}
 
 
-private Return_type ::= (void | Types | CustomObject)
+private Return_type ::= (void | Types | TypesWithGenerics | CustomObject)
 private Cast ::= LPAREN (Types | CustomObject) RPAREN
 private CustomObject ::= ID Array?
 private Array ::= LBRACK (Arithmetic | ID | DIGIT | STRING)? RBRACK
@@ -142,6 +143,7 @@ private Array ::= LBRACK (Arithmetic | ID | DIGIT | STRING)? RBRACK
 /* Tokens */ // temp
 Types ::= (bool | byte | sbyte | char | decimal | double | float | int | uint | long | ulong | object | short |
            ushort | var | 'string') Array?    // todo
+TypesWithGenerics ::= (List | Dictionary) '<' (','? (Types | TypesWithGenerics | CustomObject))+ '>' Array?
 Bool ::= true | false
 ValueTypes ::= (struct | enum)
 ReferenceTypes ::= (class | interface | delegate)
@@ -157,6 +159,6 @@ ReservedWords ::= (as | base | break | case | catch | continue | do | else | fal
                    this | throw | true | try | typeof | using | while | var | yield)
 
 Operator ::= PLUS | MINUS | MUL | QUOTIENT | BIT_AND | BIT_OR | BIT_XOR | GREATER | GREATER_OR_EQUAL | LESS |
-             LESS_OR_EQUAL
+             LESS_OR_EQUAL | MOD
 
 
