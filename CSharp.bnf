@@ -112,7 +112,7 @@ CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new Cus
 
 Arithmetic ::= Cast? (MethodCall | Property| DIGIT | CustomObject) (Operator Cast? (MethodCall | Property| DIGIT |
                CustomObject))+
-
+AssignArithmetic ::= CustomObject AssignOperator (CustomObject | DIGIT | STRING)?
 
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
 Argument ::= LPAREN (Cast? (QualifiedClassDec | Invocation | Arithmetic| MethodCall | Property | DIGIT | STRING |
@@ -122,8 +122,7 @@ Invocation ::= new (QualifiedClassDec | Types | CustomObject) Argument?
 MethodCall ::= (QualifiedClassDec | ID) ('.'(QualifiedClassDec | CustomObject))? Argument SEMI?
 Property ::= (MethodCall | CustomObject) ('.' ID)+ Array? SEMI?
 
-ForStatement ::= for LPAREN IntDec Arithmetic SEMI? ID PLUS_PLUS RPAREN LBRACE? Expr*   // todo double operators
-                 RBRACE? {pin=10}
+ForStatement ::= for LPAREN IntDec Arithmetic SEMI? AssignArithmetic RPAREN LBRACE? Expr* RBRACE? {pin=10}
 ForEachStatement ::= foreach LPAREN (Types | CustomObject) ID in (MethodCall) RPAREN LBRACE? Expr* RBRACE? {pin=8}
 Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
 Using ::= using LPAREN CustomObject ID ASSIGN (Invocation | MethodCall | Property) RPAREN LBRACE Expr* RBRACE {pin=9}
@@ -162,5 +161,8 @@ ReservedWords ::= (as | base | break | case | catch | continue | do | else | fal
 
 Operator ::= PLUS | MINUS | MUL | QUOTIENT | BIT_AND | BIT_OR | BIT_XOR | GREATER | GREATER_OR_EQUAL | LESS |
              LESS_OR_EQUAL | MOD
+AssignOperator ::= PLUS_PLUS | PLUS_ASSIGN | MINUS_MINUS | MINUS_ASSIGN | MUL_ASSIGN | QUOTIENT_ASSIGN |
+                   REMAINDER_ASSIGN | BIT_OR_ASSIGN | BIT_CLEAR_ASSIGN | BIT_AND_ASSIGN | BIT_XOR_ASSIGN |
+                   SHIFT_LEFT_ASSIGN | SHIFT_RIGHT_ASSIGN
 
 
