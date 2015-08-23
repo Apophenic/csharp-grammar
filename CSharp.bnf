@@ -81,8 +81,8 @@ NamespaceDec ::= namespace ID LBRACE ClassList RBRACE
 ClassList ::= ClassDec*
 ClassDec ::= (AccessModifier? TypeModifier? ReferenceTypes ID LBRACE MethodList RBRACE)
 MethodList ::= (MethodDec | EnumDec | VarDec)*
-MethodDec ::= AccessModifier? TypeModifier* Return_type ID LPAREN ((Types | CustomObject) ID ','?)* RPAREN LBRACE
-              Expr* RBRACE {pin=8}
+MethodDec ::= AccessModifier? TypeModifier* Return_type ID LPAREN ((Types |TypesWithGenerics | CustomObject) ID ','?)*
+              RPAREN LBRACE Expr* RBRACE {pin=8}
 EnumDec ::= AccessModifier? enum ID LBRACE (ID ',')* ID* RBRACE
 
 
@@ -123,8 +123,10 @@ MethodCall ::= (QualifiedClassDec | ID) ('.'(QualifiedClassDec | CustomObject))?
 Property ::= (MethodCall | CustomObject) ('.' ID)+ Array? SEMI?
 
 ForStatement ::= for LPAREN IntDec Arithmetic SEMI? AssignArithmetic RPAREN LBRACE? Expr* RBRACE? {pin=10}
-ForEachStatement ::= foreach LPAREN (Types | CustomObject) ID in (MethodCall) RPAREN LBRACE? Expr* RBRACE? {pin=8}
-Switch ::= switch LPAREN ID RPAREN LBRACE (case LPAREN Expr* RPAREN ':')* default ':' Expr* RBRACE
+ForEachStatement ::= foreach LPAREN (Types | CustomObject) ID in (Property | MethodCall | CustomObject) RPAREN LBRACE? Expr*
+                     RBRACE? {pin=8}
+Switch ::= switch LPAREN (Property | CustomObject) RPAREN LBRACE (case LPAREN? (DIGIT | STRING | CustomObject)
+           RPAREN? ':' Expr*)* default ':' Expr* RBRACE
 Using ::= using LPAREN CustomObject ID ASSIGN (Invocation | MethodCall | Property) RPAREN LBRACE Expr* RBRACE {pin=9}
 Return ::= return (Expr | ID) SEMI?
 IfStatement ::= if LPAREN Comparison RPAREN LBRACE?
