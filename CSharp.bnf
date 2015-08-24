@@ -115,7 +115,7 @@ AssignArithmetic ::= CustomObject AssignOperator (CustomObject | DIGIT | STRING)
 Comparison ::= (Expr | CustomObject | DIGIT | STRING) (CompareOperator (Expr | CustomObject | DIGIT | STRING))+
 
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
-Argument ::= LPAREN (Cast? (QualifiedClassDec | Invocation | Arithmetic| MethodCall | Property | DIGIT | STRING |
+Argument ::= LPAREN (out? Cast? (QualifiedClassDec | Invocation | Arithmetic| MethodCall | Property | DIGIT | STRING |
              null | Bool | CustomObject) ','?)* RPAREN
 Invocation ::= new (QualifiedClassDec | Types | CustomObject) Argument?
 
@@ -126,11 +126,10 @@ ForStatement ::= for LPAREN IntDec Arithmetic SEMI? AssignArithmetic RPAREN LBRA
 ForEachStatement ::= foreach LPAREN (Types | CustomObject) ID in (Property | MethodCall | CustomObject) RPAREN LBRACE? Expr*
                      RBRACE? {pin=8}
 Switch ::= switch LPAREN (Property | CustomObject) RPAREN LBRACE (case LPAREN? (DIGIT | STRING | CustomObject)
-           RPAREN? ':' Expr*)* default ':' Expr* RBRACE
+           RPAREN? ':' Expr*)* (default ':' Expr*)? RBRACE
 Using ::= using LPAREN CustomObject ID ASSIGN (Invocation | MethodCall | Property) RPAREN LBRACE Expr* RBRACE {pin=9}
-Return ::= return (Expr | ID) SEMI?
-IfStatement ::= if LPAREN Comparison RPAREN LBRACE?
-                Expr* RBRACE? ElseIfStatement* ElseStatement? {pin=6}
+Return ::= return (Expr | Bool | CustomObject) SEMI?
+IfStatement ::= if LPAREN (Comparison | CustomObject) RPAREN LBRACE? Expr* RBRACE? ElseIfStatement* ElseStatement? {pin=6}
 private ElseStatement ::= else LBRACE? Expr* RBRACE? {pin=1}
 private ElseIfStatement ::= else IfStatement LBRACE? Expr RBRACE? {pin=2}
 
