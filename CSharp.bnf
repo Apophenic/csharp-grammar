@@ -105,7 +105,7 @@ IntDec ::= u?(int | long | short) ID ASSIGN (Arithmetic | DIGIT) SEMI {pin=3}
 StringDec ::= 'string' ID ASSIGN STRING SEMI {pin=2}
 ListDec ::= TypesWithGenerics ID ASSIGN ((new TypesWithGenerics) | MethodCall) SEMI?
 DictionaryDec ::= TypesWithGenerics ID ASSIGN ((new TypesWithGenerics) | MethodCall) SEMI
-QualifiedClassDec ::= 'System' ('.' ID)+ Argument SEMI {pin=2}
+QualifiedClassDec ::= 'System' ('.' (Types | TypesWithGenerics | ID))+ Argument SEMI {pin=2}
 CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new CustomObject LPAREN (ID | DIGIT | STRING)
                     RPAREN) SEMI {pin=2}
 
@@ -116,7 +116,7 @@ Comparison ::= (Expr | CustomObject | DIGIT | STRING) (CompareOperator (Expr | C
 
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
 Argument ::= LPAREN (out? Cast? (QualifiedClassDec | Invocation | Arithmetic| MethodCall | Property | DIGIT | STRING |
-             null | Bool | CustomObject) ','?)* RPAREN
+             null | Bool | TypeCheck | CustomObject) ','?)* RPAREN
 Invocation ::= new (QualifiedClassDec | Types | CustomObject) Argument?
 
 MethodCall ::= (QualifiedClassDec | ID) ('.'(QualifiedClassDec | CustomObject))? Argument SEMI?
@@ -129,13 +129,15 @@ Switch ::= switch LPAREN (Property | CustomObject) RPAREN LBRACE (case LPAREN? (
            RPAREN? ':' Expr*)* (default ':' Expr*)? RBRACE
 Using ::= using LPAREN CustomObject ID ASSIGN (Invocation | MethodCall | Property) RPAREN LBRACE Expr* RBRACE {pin=9}
 Return ::= return (Expr | Bool | CustomObject) SEMI?
-IfStatement ::= if LPAREN (Comparison | CustomObject) RPAREN LBRACE? Expr* RBRACE? ElseIfStatement* ElseStatement? {pin=6}
+IfStatement ::= if LPAREN (Comparison | TypeCheck | CustomObject) RPAREN LBRACE? Expr* RBRACE? ElseIfStatement*
+                ElseStatement? {pin=6}
 private ElseStatement ::= else LBRACE? Expr* RBRACE? {pin=1}
 private ElseIfStatement ::= else IfStatement LBRACE? Expr RBRACE? {pin=2}
 
 Exception ::= throw new MethodCall
 
-TypeCheck ::= ID (is | as | instanceof) (Types | TypesWithGenerics | CustomObject) // todo name + remove from expr?
+TypeCheck ::= ID (is | as | instanceof) (QualifiedClassDec | Types | TypesWithGenerics | CustomObject) // todo name +
+              // remove from expr?
 
 
 private Return_type ::= (void | Types | TypesWithGenerics | CustomObject)
