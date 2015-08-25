@@ -87,10 +87,10 @@ EnumDec ::= AccessModifier? enum ID LBRACE (ID ',')* ID* RBRACE
 
 
 Expr ::= (VarDec | QualifiedClassDec | Arithmetic | Switch | Using | Return | ForStatement | ForEachStatement|
-          IfStatement | MethodCall | Property | Exception)
+          IfStatement | MethodCall | Property | Exception | TypeCheck)
 
 VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec | IntDec |
-                                          StringDec | ObjectDec | NewTypeDec  | ListDec |
+                                          StringDec | NewTypeDec  | ListDec |
                                           GeneralDec | PreprocessorDec | CustomObjectDec | DictionaryDec)
 
 GeneralDec ::= Types? (Property | CustomObject+) ASSIGN Cast? (Arithmetic | Property | MethodCall | Bool | null |
@@ -134,6 +134,8 @@ private ElseStatement ::= else LBRACE? Expr* RBRACE? {pin=1}
 private ElseIfStatement ::= else IfStatement LBRACE? Expr RBRACE? {pin=2}
 
 Exception ::= throw new MethodCall
+
+TypeCheck ::= ID (is | as | instanceof) (Types | TypesWithGenerics | CustomObject) // todo name + remove from expr?
 
 
 private Return_type ::= (void | Types | TypesWithGenerics | CustomObject)
