@@ -93,9 +93,10 @@ VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec
                                           StringDec | NewTypeDec  | ListDec |
                                           GeneralDec | PreprocessorDec | CustomObjectDec | DictionaryDec)
 
-GeneralDec ::= Types? (Property | CustomObject+) ASSIGN Cast? (Arithmetic | Property | MethodCall | Bool | null |
-               DIGIT | CustomObject) SEMI?
-NewTypeDec ::= ((Types | CustomObject) ID | Property) ASSIGN new? (Types | MethodCall | QualifiedClassDec) SEMI?
+GeneralDec ::= Types? (Property | CustomObject+) ASSIGN Cast? (Arithmetic | Invocation | Property | MethodCall | Bool
+               | null | DIGIT | CustomObject) SEMI?
+NewTypeDec ::= ((Types | CustomObject) ID | Property) ASSIGN new? (Types | TypesWithGenerics | MethodCall
+                 | QualifiedClassDec) SEMI?
 
 BoolDec ::= bool ID ASSIGN (true | false) SEMI {pin=2}
 ByteDec ::= byte ID ASSIGN (0x DIGIT+) SEMI {pin=2} // todo
@@ -104,7 +105,7 @@ FloatDec ::= float ID ASSIGN DIGIT '.'? 'f' SEMI {pin=2}
 IntDec ::= u?(int | long | short) ID ASSIGN (Arithmetic | DIGIT) SEMI {pin=3}
 StringDec ::= 'string' ID ASSIGN STRING SEMI {pin=2}
 ListDec ::= TypesWithGenerics ID ASSIGN ((new TypesWithGenerics) | MethodCall) SEMI?
-DictionaryDec ::= TypesWithGenerics ID ASSIGN ((new TypesWithGenerics) | MethodCall) SEMI
+DictionaryDec ::= TypesWithGenerics ID ASSIGN (((new TypesWithGenerics | TypeCheck)) | MethodCall | CustomObject) SEMI
 QualifiedClassDec ::= 'System' ('.' (Types | TypesWithGenerics | ID))+ Argument SEMI {pin=2}
 CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new CustomObject LPAREN (ID | DIGIT | STRING)
                     RPAREN) SEMI {pin=2}
@@ -117,7 +118,7 @@ Comparison ::= (Expr | CustomObject | DIGIT | STRING) (CompareOperator (Expr | C
 Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
 Argument ::= LPAREN (out? Cast? (QualifiedClassDec | Invocation | Arithmetic| MethodCall | Property | DIGIT | STRING |
              null | Bool | TypeCheck | CustomObject) ','?)* RPAREN
-Invocation ::= new (QualifiedClassDec | Types | CustomObject) Argument?
+Invocation ::= new (QualifiedClassDec | Types | TypesWithGenerics | CustomObject) Argument?
 
 MethodCall ::= (QualifiedClassDec | ID) (('.'(QualifiedClassDec | CustomObject))? Argument)+ SEMI?
 Property ::= (MethodCall | CustomObject) ('.' ID)+ Array? SEMI?
