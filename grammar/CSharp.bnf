@@ -79,10 +79,9 @@ ImportList ::= ImportDec*
 ImportDec ::= using ID (ID | DOT)* SEMI
 NamespaceDec ::= namespace ID LBRACE ClassList RBRACE
 ClassList ::= ClassDec*
-ClassDec ::= (AccessModifier? TypeModifier? ReferenceTypes ID LBRACE MethodList RBRACE)
+ClassDec ::= (AccessModifier? TypeModifier? Modules ID LBRACE MethodList RBRACE)
 MethodList ::= (MethodDec | EnumDec | VarDec)*
-MethodDec ::= AccessModifier? TypeModifier* Return_type ID LPAREN ((Types |TypesWithGenerics | CustomObject) ID ','?)*
-              RPAREN LBRACE Expr* RBRACE {pin=8}
+MethodDec ::= AccessModifier? TypeModifier* (Type | void) ID LPAREN (Type ID ','?)* RPAREN LBRACE Expr* RBRACE
 EnumDec ::= AccessModifier? enum ID LBRACE (ID ',')* ID* RBRACE
 
 
@@ -93,9 +92,9 @@ VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec
                                           StringDec | NewTypeDec  | ListDec |
                                           GeneralDec | PreprocessorDec | CustomObjectDec | DictionaryDec)
 
-GeneralDec ::= (Types | TypesWithGenerics)? (Property | CustomObject+) ASSIGN Cast? (Arithmetic | Invocation |
-                TypeCheck | Property | MethodCall | Bool | null | DIGIT | CustomObject) SEMI?
-NewTypeDec ::= ((Types | CustomObject) ID | Property) ASSIGN new? (Types | TypesWithGenerics | MethodCall
+GeneralDec ::= (PrimitiveTypes | GenericTypes)? (Property | CustomType+) ASSIGN Cast? (Arithmetic | Invocation |
+                TypeCheck | Property | MethodCall | Bool | null | DIGIT | CustomType) SEMI?
+NewTypeDec ::= ((PrimitiveTypes | CustomType) ID | Property) ASSIGN new? (PrimitiveTypes | GenericTypes | MethodCall
                  | QualifiedClassDec) SEMI?
 
 BoolDec ::= bool ID ASSIGN (true | false) SEMI {pin=2}
@@ -104,56 +103,60 @@ CharDec ::= char ID ASSIGN APOS ([a-zA-Z0-9] | (BACK ('u' | 'x') DIGIT{4})) APOS
 FloatDec ::= float ID ASSIGN DIGIT '.'? 'f' SEMI {pin=2}
 IntDec ::= u?(int | long | short) ID ASSIGN (Arithmetic | DIGIT) SEMI {pin=3}
 StringDec ::= 'string' ID ASSIGN STRING SEMI {pin=2}
-ListDec ::= TypesWithGenerics ID ASSIGN ((new TypesWithGenerics) | MethodCall) SEMI?
-DictionaryDec ::= TypesWithGenerics ID ASSIGN (((new TypesWithGenerics | TypeCheck)) | MethodCall | CustomObject) SEMI
-QualifiedClassDec ::= 'System' ('.' (Types | TypesWithGenerics | ID))+ Argument SEMI {pin=2}
-CustomObjectDec ::= CustomObject ID ASSIGN (Cast (ID | DIGIT | STRING) | new CustomObject LPAREN (ID | DIGIT | STRING)
+ListDec ::= GenericTypes ID ASSIGN ((new GenericTypes) | MethodCall) SEMI?
+DictionaryDec ::= GenericTypes ID ASSIGN (((new GenericTypes | TypeCheck)) | MethodCall | CustomType) SEMI
+QualifiedClassDec ::= 'System' ('.' (PrimitiveTypes | GenericTypes | ID))+ Argument SEMI {pin=2}
+CustomObjectDec ::= CustomType ID ASSIGN (Cast (ID | DIGIT | STRING) | new CustomType LPAREN (ID | DIGIT | STRING)
                     RPAREN) SEMI {pin=2}
 
-Arithmetic ::= Cast? (MethodCall | Property| DIGIT | CustomObject) (Operator Cast? (MethodCall | Property| DIGIT |
-               CustomObject))+
-AssignArithmetic ::= CustomObject AssignOperator (CustomObject | DIGIT | STRING)?
-Comparison ::= (Expr | CustomObject | DIGIT | STRING) (CompareOperator (Expr | CustomObject | DIGIT | STRING))+
+Arithmetic ::= Cast? (MethodCall | Property| DIGIT | CustomType) (Operator Cast? (MethodCall | Property| DIGIT |
+               CustomType))+
+AssignArithmetic ::= CustomType AssignOperator (CustomType | DIGIT | STRING)?
+Comparison ::= (Expr | CustomType | DIGIT | STRING) (CompareOperator (Expr | CustomType | DIGIT | STRING))+
 
-Parameter ::= ID LPAREN ((Types | CustomObject) ID ','*)* RPAREN
+Parameter ::= ID LPAREN ((PrimitiveTypes | CustomType) ID ','*)* RPAREN
 Argument ::= LPAREN (out? Cast? (QualifiedClassDec | Invocation | Arithmetic| MethodCall | Property | DIGIT | STRING |
-             null | Bool | TypeCheck | CustomObject) ','?)* RPAREN
-Invocation ::= new (QualifiedClassDec | Types | TypesWithGenerics | CustomObject) Argument?
+             null | Bool | TypeCheck | CustomType) ','?)* RPAREN
+Invocation ::= new (QualifiedClassDec | PrimitiveTypes | GenericTypes | CustomType) Argument?
 
-MethodCall ::= (QualifiedClassDec | ID) (('.'(QualifiedClassDec | CustomObject))? Argument)+ SEMI?
-Property ::= (MethodCall | CustomObject) ('.' ID)+ Array? SEMI?
+MethodCall ::= (QualifiedClassDec | ID) (('.'(QualifiedClassDec | CustomType))? Argument)+ SEMI?
+Property ::= (MethodCall | CustomType) ('.' ID)+ Array? SEMI?
 
 ForStatement ::= for LPAREN IntDec Arithmetic SEMI? AssignArithmetic RPAREN LBRACE? Expr* RBRACE? {pin=10}
-ForEachStatement ::= foreach LPAREN (Types | CustomObject) ID in (Property | MethodCall | CustomObject) RPAREN LBRACE? Expr*
+ForEachStatement ::= foreach LPAREN (PrimitiveTypes | CustomType) ID in (Property | MethodCall | CustomType) RPAREN LBRACE? Expr*
                      RBRACE? {pin=8}
-Switch ::= switch LPAREN (MethodCall | Property | CustomObject) RPAREN LBRACE (case LPAREN? (DIGIT | STRING |
-           CustomObject) RPAREN? ':' Expr*)* (default ':' Expr*)? RBRACE
-Using ::= using LPAREN CustomObject ID ASSIGN (Invocation | MethodCall | Property) RPAREN LBRACE Expr* RBRACE {pin=9}
-Return ::= return (Expr | Bool | CustomObject) SEMI?
-IfStatement ::= if LPAREN (Comparison | TypeCheck | CustomObject) RPAREN LBRACE? Expr* RBRACE? ElseIfStatement*
+Switch ::= switch LPAREN (MethodCall | Property | CustomType) RPAREN LBRACE (case LPAREN? (DIGIT | STRING |
+           CustomType) RPAREN? ':' Expr*)* (default ':' Expr*)? RBRACE
+Using ::= using LPAREN CustomType ID ASSIGN (Invocation | MethodCall | Property) RPAREN LBRACE Expr* RBRACE {pin=9}
+Return ::= return (Expr | Bool | CustomType) SEMI?
+IfStatement ::= if LPAREN (Comparison | TypeCheck | CustomType) RPAREN LBRACE? Expr* RBRACE? ElseIfStatement*
                 ElseStatement? {pin=6}
 private ElseStatement ::= else LBRACE? Expr* RBRACE? {pin=1}
 private ElseIfStatement ::= else IfStatement LBRACE? Expr RBRACE? {pin=2}
 
 Exception ::= throw new MethodCall
 
-TypeCheck ::= ID (is | as | instanceof) (QualifiedClassDec | Types | TypesWithGenerics | CustomObject) // todo name +
+TypeCheck ::= ID (is | as | instanceof) (QualifiedClassDec | PrimitiveTypes | GenericTypes | CustomType) // todo name +
               // remove from expr?
 
 
-private Return_type ::= (void | Types | TypesWithGenerics | CustomObject)
-private Cast ::= LPAREN (Types | TypesWithGenerics | CustomObject) RPAREN
-private CustomObject ::= (ID Array?) | null
+private Cast ::= LPAREN (PrimitiveTypes | GenericTypes | CustomType) RPAREN
+
 private Array ::= LBRACK (Arithmetic | ID | DIGIT | STRING)? RBRACK
 
+Type ::= PrimitiveTypes | GenericTypes | CustomType
+Value ::= Bool | STRING | DIGIT | null
 
 /* Tokens */ // temp
-Types ::= (bool | byte | sbyte | char | decimal | double | float | int | uint | long | ulong | object | short |
+PrimitiveTypes ::= (bool | byte | sbyte | char | decimal | double | float | int | uint | long | ulong | object | short |
            ushort | var | 'string') Array?    // todo
-TypesWithGenerics ::= (List | Dictionary) '<' (','? (Types | TypesWithGenerics | CustomObject))+ '>' Argument?
+GenericTypes ::= (List | Dictionary) '<' (','? (PrimitiveTypes | GenericTypes | CustomType))+ '>' Argument?
+private CustomType ::= (ID Array?) | null
+
 Bool ::= true | false
-ValueTypes ::= (struct | enum)
-ReferenceTypes ::= (class | interface | delegate)
+ValueClasses ::= (struct | enum)
+Modules ::= (class | interface | delegate)
+
 
 PreprocessorDec ::= '#'(if | else | elif | endif | define | undef | warning | error | line | region |
                         endregion | pragma | pragma warning | pragma checksum) ID*
