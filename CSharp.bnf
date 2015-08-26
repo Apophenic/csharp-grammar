@@ -93,8 +93,8 @@ VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec
                                           StringDec | NewTypeDec  | ListDec |
                                           GeneralDec | PreprocessorDec | CustomObjectDec | DictionaryDec)
 
-GeneralDec ::= Types? (Property | CustomObject+) ASSIGN Cast? (Arithmetic | Invocation | Property | MethodCall | Bool
-               | null | DIGIT | CustomObject) SEMI?
+GeneralDec ::= (Types | TypesWithGenerics)? (Property | CustomObject+) ASSIGN Cast? (Arithmetic | Invocation |
+                TypeCheck | Property | MethodCall | Bool | null | DIGIT | CustomObject) SEMI?
 NewTypeDec ::= ((Types | CustomObject) ID | Property) ASSIGN new? (Types | TypesWithGenerics | MethodCall
                  | QualifiedClassDec) SEMI?
 
@@ -126,8 +126,8 @@ Property ::= (MethodCall | CustomObject) ('.' ID)+ Array? SEMI?
 ForStatement ::= for LPAREN IntDec Arithmetic SEMI? AssignArithmetic RPAREN LBRACE? Expr* RBRACE? {pin=10}
 ForEachStatement ::= foreach LPAREN (Types | CustomObject) ID in (Property | MethodCall | CustomObject) RPAREN LBRACE? Expr*
                      RBRACE? {pin=8}
-Switch ::= switch LPAREN (Property | CustomObject) RPAREN LBRACE (case LPAREN? (DIGIT | STRING | CustomObject)
-           RPAREN? ':' Expr*)* (default ':' Expr*)? RBRACE
+Switch ::= switch LPAREN (MethodCall | Property | CustomObject) RPAREN LBRACE (case LPAREN? (DIGIT | STRING |
+           CustomObject) RPAREN? ':' Expr*)* (default ':' Expr*)? RBRACE
 Using ::= using LPAREN CustomObject ID ASSIGN (Invocation | MethodCall | Property) RPAREN LBRACE Expr* RBRACE {pin=9}
 Return ::= return (Expr | Bool | CustomObject) SEMI?
 IfStatement ::= if LPAREN (Comparison | TypeCheck | CustomObject) RPAREN LBRACE? Expr* RBRACE? ElseIfStatement*
@@ -142,7 +142,7 @@ TypeCheck ::= ID (is | as | instanceof) (QualifiedClassDec | Types | TypesWithGe
 
 
 private Return_type ::= (void | Types | TypesWithGenerics | CustomObject)
-private Cast ::= LPAREN (Types | CustomObject) RPAREN
+private Cast ::= LPAREN (Types | TypesWithGenerics | CustomObject) RPAREN
 private CustomObject ::= (ID Array?) | null
 private Array ::= LBRACK (Arithmetic | ID | DIGIT | STRING)? RBRACK
 
