@@ -119,7 +119,7 @@ Argument ::= LPAREN (out? Cast? (QualifiedClassDec | Invocation | Arithmetic| Me
              null | Bool | TypeCheck | CustomObject) ','?)* RPAREN
 Invocation ::= new (QualifiedClassDec | Types | CustomObject) Argument?
 
-MethodCall ::= (QualifiedClassDec | ID) ('.'(QualifiedClassDec | CustomObject))? Argument SEMI?
+MethodCall ::= (QualifiedClassDec | ID) (('.'(QualifiedClassDec | CustomObject))? Argument)+ SEMI?
 Property ::= (MethodCall | CustomObject) ('.' ID)+ Array? SEMI?
 
 ForStatement ::= for LPAREN IntDec Arithmetic SEMI? AssignArithmetic RPAREN LBRACE? Expr* RBRACE? {pin=10}
