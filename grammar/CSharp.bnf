@@ -130,9 +130,9 @@ Switch ::= switch LPAREN (MethodCall | Property | CustomType) RPAREN LBRACE (cas
 Using ::= using LPAREN CustomType ID ASSIGN (Invocation | MethodCall | Property) RPAREN LBRACE Expr* RBRACE {pin=9}
 Return ::= return (Expr | Bool | CustomType) SEMI?
 IfStatement ::= if LPAREN (Comparison | TypeCheck | CustomType) RPAREN LBRACE? Expr* RBRACE? ElseIfStatement*
-                ElseStatement? {pin=6}
-private ElseStatement ::= else LBRACE? Expr* RBRACE? {pin=1}
-private ElseIfStatement ::= else IfStatement LBRACE? Expr RBRACE? {pin=2}
+                ElseStatement?
+private ElseStatement ::= else LBRACE? Expr* RBRACE?
+private ElseIfStatement ::= else IfStatement
 
 Exception ::= throw new MethodCall
 
