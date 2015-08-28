@@ -85,8 +85,8 @@ MethodDec ::= AccessModifier? TypeModifier* (Type | void) ID LPAREN (Type ID ','
 EnumDec ::= AccessModifier? enum ID LBRACE (ID ',')* ID* RBRACE
 
 
-Expr ::= (VarDec | QualifiedClassDec | Arithmetic | Switch | Using | Return | ForStatement | ForEachStatement|
-          IfStatement | MethodCall | Property | Exception | TypeCheck)
+Expr ::= (VarDec | QualifiedClassDec | Arithmetic | AssignArithmetic | Switch | Using | Return | ForStatement |
+          ForEachStatement | IfStatement | FlowStatement | MethodCall | Property | Exception | TypeCheck)
 
 VarDec ::= AccessModifier? TypeModifier? (BoolDec | ByteDec | CharDec | FloatDec | IntDec |
                                           StringDec | NewTypeDec  | ListDec |
@@ -111,7 +111,7 @@ CustomObjectDec ::= CustomType ID ASSIGN (Cast (ID | DIGIT | STRING) | new Custo
 
 Arithmetic ::= Cast? (MethodCall | Property| DIGIT | CustomType) (Operator Cast? (MethodCall | Property| DIGIT |
                CustomType))+
-AssignArithmetic ::= CustomType AssignOperator (CustomType | DIGIT | STRING)?
+AssignArithmetic ::= CustomType AssignOperator (MethodCall | Property | CustomType | DIGIT | STRING)? SEMI?
 Comparison ::= (Expr | CustomType | DIGIT | STRING) (CompareOperator (Expr | CustomType | DIGIT | STRING))+
 
 Parameter ::= ID LPAREN ((PrimitiveTypes | CustomType) ID ','*)* RPAREN
@@ -134,6 +134,8 @@ IfStatement ::= if LPAREN (Comparison | TypeCheck | CustomType) RPAREN LBRACE? E
 private ElseStatement ::= else LBRACE? Expr* RBRACE?
 private ElseIfStatement ::= else IfStatement
 
+FlowStatement ::= (break | continue) SEMI
+
 Exception ::= throw new MethodCall
 
 TypeCheck ::= ID (is | as | instanceof) (QualifiedClassDec | PrimitiveTypes | GenericTypes | CustomType) // todo name +
@@ -146,6 +148,8 @@ private Array ::= LBRACK (Arithmetic | ID | DIGIT | STRING)? RBRACK
 
 Type ::= PrimitiveTypes | GenericTypes | CustomType
 Value ::= Bool | STRING | DIGIT | null
+
+
 
 /* Tokens */ // temp
 PrimitiveTypes ::= (bool | byte | sbyte | char | decimal | double | float | int | uint | long | ulong | object | short |
